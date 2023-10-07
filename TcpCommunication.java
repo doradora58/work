@@ -26,6 +26,9 @@ public class TcpCommunication implements ITcpCommunication {
     public void startClientCommunication() {
         if(clientThread != null){
             System.out.println("ClientThread run");
+             String ip = null;
+             int port = 0;
+             clientThread.init(ip, port);
             clientThread.start();
         }else{
             System.out.println("ClientThread is null");   
@@ -60,6 +63,7 @@ public class TcpCommunication implements ITcpCommunication {
     public void startServerCommunication() {
         if(serverThread != null){
             System.out.println("ServerThread run");
+            serverThread.init();
             serverThread.start();
         }else{
             System.out.println("ServerThread is null");
