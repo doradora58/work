@@ -1,2 +1,11 @@
 /.vscode
 /com.java.core
+/ClientThread.class
+/FleetModule.class
+/ITcpCommunication.class
+/Main.class
+/ServerThread.class
+/TcpCommunication.class
+/TcpConfig.class
+/Status.class
+/StatusMessage.class
