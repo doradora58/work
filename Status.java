@@ -36,7 +36,7 @@ public class Status {
 		return currentTime;
 	}
 	public void printData(){
-		System.out.println("id:"+this.id+" no:"+this.no+" areaId:"+this.areaId+" valid:"+this.valid+" version:"+this.version+" currentTime:"+ this.currentTime);
+		System.out.println("送信データ "+"id:"+this.id+" no:"+this.no+" areaId:"+this.areaId+" valid:"+this.valid+" version:"+this.version+" currentTime:"+ this.currentTime);
 		
 	}
 }

@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class ClientThread extends Thread {
 
+	private int messageId;
     private String serverIp;
     private int serverPort;
     // if use bind
@@ -29,6 +30,8 @@ public class ClientThread extends Thread {
         this.localIp = localIp;
         this.localPort = localPort;
         try {
+            socketChannel = SocketChannel.open();
+    		socketChannel.configureBlocking(true);
             if (localIp != null && localPort != 0) {
                 System.out.println("Bind mode");
                 clientAddress = new InetSocketAddress(localIp, localPort);
@@ -43,17 +46,28 @@ public class ClientThread extends Thread {
     }
 
     public void run() {
-        isRun = true;
+        this.isRun = true;
+        this.messageId = 0;
+			
         while (isRun) {
             try {
                 try {
-                    System.out.println("ClientThread connecting...");
-                    socketChannel = SocketChannel.open(serverAddress);
+                	if(!socketChannel.isConnected()) {
+                        System.out.println("ClientThread connecting...");
+                        socketChannel.connect(serverAddress);
+                        socketChannel.finishConnect();
+                	}
+                    if(socketChannel.isConnected()) {
+                        Thread.sleep(1000);
+                    	sendMessage();
+                        messageId++;
+                    }
+                    
                 } catch (IOException e) {
-                    Thread.sleep(1000);
+//                    Thread.sleep(1000);
+            		e.printStackTrace();
                     continue;
                 }
-                sendMessage();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -79,12 +93,14 @@ public class ClientThread extends Thread {
 
     	// 送信バッファデータを構築(今回はint型をテストするので最低4バイトを確保)
         ByteBuffer bb = ByteBuffer.allocate(dataSize);
-        long id = 1111;
+        long id = messageId;
         int no = 2222;
         short areaId = 1234;
         boolean valid = true;
         String version ="1.1.1";
         Status status = new Status(id, no, areaId, version);
+        status.printData();
+        
         bb = serializeStatus(status);
         // 操作説明
 //        System.out.println("送信する数値を入力してEnterで送信します。");
@@ -105,25 +121,30 @@ public class ClientThread extends Thread {
 
 	private ByteBuffer serializeStatus(Status status) {
 		// TODO Auto-generated method stub
-	  	int dataSize = 30; //byte unit
+	  	int dataSize = 1024; //byte unit
 		ByteBuffer buf = ByteBuffer.allocate(dataSize);
-		// 4 byte
-		buf.position(0);
-		buf.putLong(status.getId());
 		// 8 byte
-		buf.position(8);
+//		buf.position(0);
+		buf.putLong(status.getId());
+		// 4 byte
+//		buf.position(8);
 		buf.putInt(status.getNo());
-		
 		// 2 byte
-		buf.position(12);
+//		buf.position(12);
 		buf.putShort(status.getAreaId());			
 		
-		buf.position(14);
-		buf.put("1.1.1".getBytes(StandardCharsets.UTF_8));
+//		buf.position(14);
+//		int versionDataSize = status.getVersion().getBytes().length;
+//		System.out.println("versionDataSize:" + versionDataSize);
+		buf.put(status.getVersion().getBytes(StandardCharsets.UTF_8));
 		
+//		int currentTimeDataSize = status.getCurrentTime().toString().length();
+//		System.out.println("currentTimeDataSize:" + currentTimeDataSize);
+		buf.put(status.getCurrentTime().toString().getBytes(StandardCharsets.UTF_8));
+
 		for(int i = 0; i < dataSize; i++) {
 			if(i == 0) {
-				System.out.print("送信データ："+buf.get(i)+", ");
+				System.out.print("送信データ "+buf.get(i)+", ");
 			}else if(i!=dataSize-1) {
 				System.out.print(buf.get(i)+", ");
 			}else {

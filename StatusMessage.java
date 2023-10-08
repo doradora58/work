@@ -7,15 +7,15 @@ public class StatusMessage {
 	private short areaId;
 	private boolean valid;
 	private String version;
-	private LocalDateTime currentTime;
+	private String currentTime;
 	
-	public StatusMessage(long id, int no, short areaId, String version) {
+	public StatusMessage(long id, int no, short areaId, String version, String currentTime) {
 		this.id = id;
 		this.no = no;
 		this.areaId = areaId;
 		//this.valid = valid;
 		this.version = version;
-		//this.currentTime = LocalDateTime.now();
+		this.currentTime = currentTime;
 	}
 	public long getId() {
 		return id;
@@ -32,11 +32,11 @@ public class StatusMessage {
 	public String getVersion() {
 		return version;
 	}
-	public LocalDateTime getCurrentTime() {
+	public String getCurrentTime() {
 		return currentTime;
 	}
 	public void printData(){
-		System.out.println("id:"+this.id+" no:"+this.no+" areaId:"+this.areaId+" valid:"+this.valid+" version:"+this.version+" currentTime:"+ this.currentTime);
+		System.out.println("受信データ "+"id:"+this.id+" no:"+this.no+" areaId:"+this.areaId+" valid:"+this.valid+" version:"+this.version+" currentTime:"+ this.currentTime);
 		
 	}
 }

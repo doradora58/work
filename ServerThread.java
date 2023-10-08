@@ -45,7 +45,7 @@ public class ServerThread extends Thread{
 			try {
 				System.out.println("ServerThread accepting...");
 				socketChannel = this.serverSocketChannel.accept();
-				int dataSize =30;
+				int dataSize =1024;
 				ByteBuffer buf = ByteBuffer.allocate(dataSize);
 				if(socketChannel!=null){
 					socketChannel.read(buf);
@@ -65,12 +65,12 @@ public class ServerThread extends Thread{
 
 	private StatusMessage deserializeStatus(ByteBuffer buf) {
 		// TODO Auto-generated method stub
-		int dataSize =30;
+		int dataSize =1024;
 		if(buf != null){
 			//intデータを受信データの0バイト目から読み込み
 			for (int i = 0; i < dataSize; i++) {
 				if(i == 0) {
-					System.out.print("受信データ："+buf.get(i)+", ");
+					System.out.print("受信データ "+buf.get(i)+", ");
 				}else if(i != dataSize-1) {
 					System.out.print(buf.get(i)+", ");
 				}else {
@@ -78,17 +78,28 @@ public class ServerThread extends Thread{
 				}
 			}
 		}
-		buf.position(0);
+//		buf.position(0);
+		buf.flip();
 		long id = buf.getLong();
+		buf.position(8);
 		int no = buf.getInt();
+		buf.position(12);
 		short areaId = buf.getShort();
 		//boolean valid =buf.get;
-
-		CharBuffer newContent = StandardCharsets.UTF_8.decode(buf);
-		System.out.println(newContent);
-		String version = newContent.toString();
-
-		return new StatusMessage(id,no,areaId,version);//new StatusMessage(id, no, areaId, version, currentTime);
+		buf.position(14);
+		buf.limit(19);
+		String version = StandardCharsets.UTF_8.decode(buf).toString();
+//		System.out.println(version);
+//		String version = versionBuf.toString();
+		buf.position(19);
+		buf.limit(45);
+//		CharBuffer newContent = StandardCharsets.UTF_8.decode(buf);
+//		System.out.println(newContent);
+//		String version = newContent.toString();
+		String currentTime = StandardCharsets.UTF_8.decode(buf).toString();
+//		System.out.println(currentTime);
+		
+		return new StatusMessage(id, no, areaId, version, currentTime);//new StatusMessage(id, no, areaId, version, currentTime);
 	}
 
 	public void close(){
